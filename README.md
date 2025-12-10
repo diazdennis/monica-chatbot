@@ -2,6 +2,8 @@
 
 A conversational AI avatar assistant for healthcare clinics, featuring HeyGen's Streaming Avatar and OpenAI GPT-4.
 
+[LIVE](https://monica-chatbot-apea.onrender.com)
+
 ## 🌟 Features
 
 - **HeyGen Streaming Avatar**: Real-time lip-synced avatar for natural conversation
