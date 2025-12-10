@@ -1,6 +1,11 @@
 import { Controller, Post, Body, Get, Query } from '@nestjs/common';
 import { ChatService } from './chat.service';
-import { ChatRequestDto, ChatResponseDto } from './dto/chat.dto';
+import {
+  ChatRequestDto,
+  ChatResponseDto,
+  TranscriptRequestDto,
+  TranscriptResponseDto,
+} from './dto/chat.dto';
 import { v4 as uuidv4 } from 'uuid';
 
 @Controller('chat')
@@ -18,6 +23,13 @@ export class ChatController {
   ): Promise<ChatResponseDto> {
     const session = sessionId || uuidv4();
     return this.chatService.getGreeting(session);
+  }
+
+  @Post('transcript')
+  async generateTranscript(
+    @Body() request: TranscriptRequestDto,
+  ): Promise<TranscriptResponseDto> {
+    return this.chatService.generateTranscript(request);
   }
 
   @Get('health')

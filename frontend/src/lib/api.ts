@@ -97,3 +97,45 @@ export async function closeHeyGenSession(sessionId: string): Promise<void> {
     method: 'DELETE',
   });
 }
+
+export interface TranscriptResponse {
+  summary: string;
+  transcript: string;
+  generatedAt: string;
+  sessionId: string;
+}
+
+export async function generateTranscript(
+  sessionId: string,
+  messages: Message[]
+): Promise<TranscriptResponse> {
+  const response = await fetch(`${API_BASE_URL}/chat/transcript`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      sessionId,
+      messages,
+    }),
+  });
+
+  if (!response.ok) {
+    throw new Error('Failed to generate transcript');
+  }
+
+  return response.json();
+}
+
+export function downloadTranscript(data: TranscriptResponse): void {
+  const content = `${data.summary}\n\n${data.transcript}`;
+  const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = `monica-chat-transcript-${new Date().toISOString().split('T')[0]}.txt`;
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  URL.revokeObjectURL(url);
+}

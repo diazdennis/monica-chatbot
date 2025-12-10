@@ -2,7 +2,15 @@ import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { OpenaiService } from '../openai/openai.service';
 import { GuardrailsService } from '../guardrails/guardrails.service';
-import { ChatRequestDto, ChatResponseDto, CtaAction } from './dto/chat.dto';
+import {
+  ChatRequestDto,
+  ChatResponseDto,
+  CtaAction,
+  TranscriptRequestDto,
+  TranscriptResponseDto,
+  MessageDto,
+  MessageRole,
+} from './dto/chat.dto';
 import { getMonicaSystemPrompt } from '../prompts/monica.prompt';
 import clinicConfig, { ClinicConfig } from '../config/clinic.config';
 
@@ -105,5 +113,82 @@ export class ChatService {
     }
 
     return { type: 'none' };
+  }
+
+  async generateTranscript(
+    request: TranscriptRequestDto,
+  ): Promise<TranscriptResponseDto> {
+    // Format the transcript text
+    const transcript = this.formatTranscript(request.messages);
+
+    // Generate AI summary
+    const summary = await this.generateSummary(request.messages);
+
+    return {
+      summary,
+      transcript,
+      generatedAt: new Date().toISOString(),
+      sessionId: request.sessionId,
+    };
+  }
+
+  private formatTranscript(messages: MessageDto[]): string {
+    const lines: string[] = [];
+    const timestamp = new Date().toLocaleString();
+
+    lines.push('═══════════════════════════════════════════════════════');
+    lines.push(`  CONVERSATION TRANSCRIPT - ${this.clinic.name}`);
+    lines.push('═══════════════════════════════════════════════════════');
+    lines.push(`Generated: ${timestamp}`);
+    lines.push('───────────────────────────────────────────────────────');
+    lines.push('');
+
+    messages.forEach((msg, index) => {
+      const speaker = msg.role === 'assistant' ? 'Monica (AI Assistant)' : 'You';
+      lines.push(`[${speaker}]`);
+      lines.push(msg.content);
+      if (index < messages.length - 1) {
+        lines.push('');
+      }
+    });
+
+    lines.push('');
+    lines.push('───────────────────────────────────────────────────────');
+    lines.push('');
+
+    return lines.join('\n');
+  }
+
+  private async generateSummary(messages: MessageDto[]): Promise<string> {
+    if (messages.length < 2) {
+      return 'Conversation too short to summarize.';
+    }
+
+    const conversationText = messages
+      .map((m) => `${m.role === 'assistant' ? 'Monica' : 'User'}: ${m.content}`)
+      .join('\n');
+
+    const summaryPrompt = `Please provide a brief, helpful summary of this health consultation conversation. 
+Focus on:
+- Main topics discussed
+- Key questions asked
+- Important information shared
+- Any recommended next steps
+
+Keep the summary concise (3-5 sentences) and user-friendly.
+
+Conversation:
+${conversationText}`;
+
+    try {
+      const summary = await this.openaiService.chat(
+        'You are a helpful assistant that summarizes health consultation conversations. Be concise and focus on actionable information.',
+        [{ role: MessageRole.USER, content: summaryPrompt }],
+      );
+      return summary;
+    } catch (error) {
+      console.error('Failed to generate summary:', error);
+      return 'Summary unavailable. Please review the transcript above.';
+    }
   }
 }

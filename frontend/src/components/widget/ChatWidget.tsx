@@ -36,6 +36,7 @@ const ChatWidget = ({
     messages,
     isLoading: isChatLoading,
     lastCta,
+    sessionId,
     sendUserMessage,
     initializeChat,
   } = useChat();
@@ -443,6 +444,7 @@ const ChatWidget = ({
                   isLoading={isChatLoading}
                   cta={lastCta}
                   onCtaClick={handleCtaClick}
+                  sessionId={sessionId}
                 />
               </div>
             </div>

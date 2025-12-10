@@ -47,3 +47,20 @@ export class ChatResponseDto {
   cta?: CtaAction;
   guardrailTriggered?: 'emergency' | 'medical_advice' | 'phi_request' | null;
 }
+
+export class TranscriptRequestDto {
+  @IsString()
+  sessionId: string;
+
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => MessageDto)
+  messages: MessageDto[];
+}
+
+export class TranscriptResponseDto {
+  summary: string;
+  transcript: string;
+  generatedAt: string;
+  sessionId: string;
+}
