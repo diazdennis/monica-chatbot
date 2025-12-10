@@ -18,7 +18,7 @@ import { GuardrailsModule } from './guardrails/guardrails.module';
     // Serve the Next.js static export from ../frontend/out
     ServeStaticModule.forRoot({
       rootPath: join(__dirname, '..', '..', 'frontend', 'out'),
-      exclude: ['/api/(.*)'],
+      exclude: ['/api{/*path}'],
     }),
     ChatModule,
     HeygenModule,
