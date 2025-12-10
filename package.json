@@ -1,0 +1,23 @@
+{
+  "name": "convo-bot",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Monica - Conversational AI Health Assistant",
+  "scripts": {
+    "install:all": "npm install && cd frontend && npm install && cd ../backend && npm install",
+    "dev": "concurrently \"npm run dev:backend\" \"npm run dev:frontend\"",
+    "dev:frontend": "cd frontend && npm run dev",
+    "dev:backend": "cd backend && npm run start:dev",
+    "build": "npm run build:frontend && npm run build:backend",
+    "build:frontend": "cd frontend && npm run build",
+    "build:backend": "cd backend && npm run build",
+    "start": "cd backend && npm run start:prod",
+    "start:prod": "cd backend && node dist/main",
+    "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,css,md}\" --ignore-path .prettierignore",
+    "format:check": "prettier --check \"**/*.{ts,tsx,js,jsx,json,css,md}\" --ignore-path .prettierignore"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.2",
+    "prettier": "^3.4.2"
+  }
+}

@@ -1,0 +1,37 @@
+# Dependencies
+/node_modules
+
+# Build output
+/dist
+
+# Environment files
+.env
+.env.local
+.env.development
+.env.production
+
+# IDE & Editors
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+
+# Testing
+/coverage
+/.nyc_output
+
+# TypeScript
+*.tsbuildinfo
+
+# Misc
+*.pem
+
